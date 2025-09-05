@@ -81,6 +81,21 @@ body {
   width: 10vw;
 }
 
+.winning-square {
+  background: #25ff4a;
+  border: 1px solid #999;
+  float: left;
+  font-size: 6vw;
+  font-weight: bold;
+  line-height: 10vw;
+  height: 10vw;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 10vw;
+}
+
 .board-row:after {
   clear: both;
   content: '';

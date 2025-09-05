@@ -23,17 +23,16 @@ import { useState } from "react";
 } */
 
 function Square({value, onSquareClick}) {
-  return (
-    <button className="square" onClick={onSquareClick}>
+    return (
+        <button className="square" onClick={onSquareClick}>
         {value}
     </button>
   );
 }
 
 function Board({xIsNext, squares, onPlay}) {
-    const rows = 3;
-    const cols = 3;
-
+    let rows = 3;
+    let cols = 3;
     const winner = calculateWinner(squares);
     let status;
     if (winner) {
@@ -42,12 +41,12 @@ function Board({xIsNext, squares, onPlay}) {
     else {
         status = "Next player: " + (xIsNext ? "X" : "O"); // inline if-else statement
     }
-
+    
     function handleClick(i) {
         if (squares[i] || winner) {
             return;
         }
-
+        
         const nextSquares = squares.slice();
         if (xIsNext){
             nextSquares[i] = "X";
@@ -55,19 +54,27 @@ function Board({xIsNext, squares, onPlay}) {
         else {
             nextSquares[i] = "O";
         }
-
+        
         onPlay(nextSquares);
     }
 
-    let boardDescription = [<div className="status">{status}</div>]
-
-    for (let i = 0; i < rows; i++){
-        boardDescription = [...boardDescription, <div className="board-row"></div>];
-        for (let j = 0; j < cols; j++){
-            let currSquare = (3 * i) + j;
-            boardDescription = [...boardDescription, <Square value={squares[currSquare]} onSquareClick={() => handleClick(currSquare)} />];
+    function renderSquares(squares, status) {
+        let boardDescription = [<div className="status">{status}</div>];
+    
+        for (let i = 0; i < rows; i++){
+            let rowChildren = [];
+            for (let j = 0; j < cols; j++){
+                let currSquare = (3 * i) + j;
+                rowChildren = [...rowChildren, <Square value={squares[currSquare]} onSquareClick={() => handleClick(currSquare)} />];
+            }
+            let currRow = <><div className="board-row">{rowChildren}</div></>;
+            boardDescription = [...boardDescription, currRow];
         }
+
+        return boardDescription;
     }
+    
+    let boardDescription = renderSquares(squares, status);
     
     return boardDescription;
 }
@@ -77,13 +84,13 @@ export default function Game() {
     const [currMove, setCurrMove] = useState(0);
     const xIsNext = (currMove % 2 === 0);
     const currentSquares = history[currMove];
-
+    
     function handlePlay(nextSquares) {
         const nextHistory = [...history.slice(0, currMove + 1), nextSquares];
         setHistory(nextHistory);
         setCurrMove(nextHistory.length - 1);
     }
-
+    
     function jumpTo(nextMove) {
         setCurrMove(nextMove);
     }
@@ -91,9 +98,16 @@ export default function Game() {
     const moves = history.map((squares, move) => {
         let description;
         if (move === currMove){
-            return(
-                <li>You are at move #{move}</li>
-            );
+            if (move == 0){
+                return(
+                    <li key={move}>You are at game start</li>
+                );
+            }
+            else {
+                return(
+                    <li key={move}>You are at move #{move}</li>
+                );
+            }
         }
         else if (move > 0) {
             description = 'Go to move #' + move;
